@@ -2,8 +2,8 @@
 
 ### Supported Versions
 
-* Spigot/Paper **1.21+** (requires JDK 21)
-* Requires the latest development build of ProtocolLib
+* Spigot/Paper **26.3+** (requires JDK 25)
+* Requires [PacketEvents](https://modrinth.com/plugin/packetevents) 2.14.0+
 
 ### Downloads
 

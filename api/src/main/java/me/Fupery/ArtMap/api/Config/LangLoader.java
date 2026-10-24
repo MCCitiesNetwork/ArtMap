@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import javax.annotation.Nonnull;
-
 class LangLoader {
     private IArtMap plugin;
     private FileConfiguration defaults;
@@ -84,7 +82,6 @@ class LangLoader {
         return lang.getString(key);
     }
 
-    @Nonnull
     String[] loadArray(String key) {
         List<String> messages = lang.getStringList(key);
         if (messages.isEmpty()) {

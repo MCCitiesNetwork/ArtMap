@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
 import me.Fupery.ArtMap.mocks.MockUtil;
 
 public class ArtMapTest {
@@ -27,10 +26,7 @@ public class ArtMapTest {
     @Before
     public void setup() throws Exception {
         this.mocks = new MockUtil();
-        this.mocks.mockServer("1.14.4");
-
-        MockBukkit.mock();
-        MockBukkit.load(ArtMap.class);
+        this.mocks.mockServer("26.3");
     }
 
     @Test

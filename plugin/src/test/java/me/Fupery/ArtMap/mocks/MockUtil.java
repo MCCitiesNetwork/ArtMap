@@ -47,6 +47,8 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -181,6 +183,14 @@ public class MockUtil {
         when(mockServer.getPluginManager()).thenReturn(this.mockPluginManager);
         when(mockServer.getPlayer(any(UUID.class))).thenAnswer( invocation -> {
             return mockPlayers.get(invocation.getArguments()[0]);
+        });
+        when(mockServer.createPlayerProfile(any(UUID.class), any())).thenAnswer( invocation -> {
+            PlayerProfile profile = mock(PlayerProfile.class);
+            PlayerTextures textures = mock(PlayerTextures.class);
+            when(profile.getUniqueId()).thenReturn((UUID) invocation.getArguments()[0]);
+            when(profile.getName()).thenReturn((String) invocation.getArguments()[1]);
+            when(profile.getTextures()).thenReturn(textures);
+            return profile;
         });
         when(mockServer.getOfflinePlayer(any(UUID.class))).thenAnswer( invocation -> {
             UUID id = (UUID) invocation.getArguments()[0];

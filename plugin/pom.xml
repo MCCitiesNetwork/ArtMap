@@ -110,6 +110,10 @@
 	</build>
 	<repositories>
 		<repository>
+			<id>codemc-releases</id>
+			<url>https://repo.codemc.io/repository/maven-releases/</url>
+		</repository>
+		<repository>
     		<id>codemc-snapshots</id>
     		<url>https://repo.codemc.io/repository/maven-snapshots/</url>
 		</repository>
@@ -134,7 +138,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.21.8-R0.1-SNAPSHOT</version>
+			<version>26.3-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -177,9 +181,9 @@
 		</dependency>
 		<!--COMPATABILITY DEPENDENCIES -->
 		<dependency>
-			<groupId>com.comphenix.protocol</groupId>
-			<artifactId>ProtocolLib</artifactId>
-			<version>5.3.0</version>
+			<groupId>com.github.retrooper</groupId>
+			<artifactId>packetevents-spigot</artifactId>
+			<version>2.14.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Tests -->
