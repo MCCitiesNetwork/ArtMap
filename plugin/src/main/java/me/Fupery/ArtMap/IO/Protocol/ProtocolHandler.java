@@ -1,11 +1,11 @@
 package me.Fupery.ArtMap.IO.Protocol;
 
-import com.comphenix.protocol.ProtocolLibrary;
+import com.github.retrooper.packetevents.PacketEvents;
 
 import org.bukkit.Bukkit;
 
+import me.Fupery.ArtMap.IO.Protocol.In.PacketEventsReceiver;
 import me.Fupery.ArtMap.IO.Protocol.In.PacketReceiver;
-import me.Fupery.ArtMap.IO.Protocol.In.ProtocolLibReceiver;
 import me.Fupery.ArtMap.api.Exception.ArtMapException;
 
 
@@ -15,11 +15,12 @@ public class ProtocolHandler {
 
     public ProtocolHandler() throws ArtMapException {
         try {
-            ProtocolLibrary.getProtocolManager();
-            packetReceiver = new ProtocolLibReceiver();
-            Bukkit.getLogger().info("[ArtMap] Using ProtocolLib PacketReciever.");
+            if (PacketEvents.getAPI() == null || !PacketEvents.getAPI().isInitialized())
+                throw new IllegalStateException("PacketEvents is not initialized");
+            packetReceiver = new PacketEventsReceiver();
+            Bukkit.getLogger().info("[ArtMap] Using PacketEvents PacketReciever.");
         } catch (Exception | NoClassDefFoundError e) {
-            throw new ArtMapException("ProtocolLib could not be hooked! Please install a compatible version of ProtocolLib.");
+            throw new ArtMapException("PacketEvents could not be hooked! Please install a compatible version of PacketEvents.");
         }
     }
 

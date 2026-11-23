@@ -3,6 +3,7 @@ package me.Fupery.ArtMap.Easel;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Material;
@@ -142,11 +143,18 @@ public final class EaselEvent {
 			Optional<MapArt> art;
 			int id;
 			boolean unsaved;
+			boolean editCopy;
+			Optional<MapArt> original;
 			CanvasSize requiredSize;
 			try {
 				id = ItemUtils.getMapID(itemInHand).orElseThrow(() -> new ArtMapException("Artwork does not have a mapview!"));
 				art = ArtMap.instance().getArtDatabase().getArtwork(id);
 				unsaved = ArtMap.instance().getArtDatabase().containsUnsavedArtwork(id);
+				// An unsaved "Artwork Copy" belongs to the artwork it was copied from, found by its title.
+				editCopy = art.isEmpty() && ArtItem.isCopyArtwork(itemInHand);
+				original = editCopy
+						? ArtMap.instance().getArtDatabase().getArtwork(itemInHand.getItemMeta().getDisplayName())
+						: Optional.empty();
 				requiredSize = ArtMap.instance().getArtDatabase().getMapCanvasSize(id);
 				if (itemInHand.hasItemMeta()) {
 					CanvasSize loreSize = Canvas.parseCanvasSize(itemInHand.getItemMeta());
@@ -199,6 +207,25 @@ public final class EaselEvent {
 						player.sendMessage("Error placing art on the Easel!");
 						ArtMap.instance().getLogger().log(Level.SEVERE, "Error placing art on easel for edit!", e);
 					}
+				} else if (editCopy && unsaved) {
+					if (!mayResumeEditCopy(original.map(MapArt::getArtist), player.getUniqueId(),
+							player.hasPermission("artmap.admin"))) {
+						returnCanvasToPlayer(removed);
+						Lang.ActionBar.NO_EDIT_PERM.send(player);
+						easel.playEffect(EaselEffect.USE_DENIED);
+						return;
+					}
+					try {
+						// Mount it as a copy of the original so saving under the original title updates it.
+						Canvas canvas = original.isPresent()
+								? new Canvas.CanvasCopy(new Map(finalId), original.get(), finalSize)
+								: new Canvas(finalId, player.getName(), finalSize);
+						mountCanvas(removed, canvas);
+					} catch (Exception e) {
+						returnCanvasToPlayer(removed);
+						player.sendMessage("Error placing art on the Easel!");
+						ArtMap.instance().getLogger().log(Level.SEVERE, "Error placing art on easel for edit!", e);
+					}
 				} else if (unsaved) {
 					try {
 						Canvas canvas = new Canvas(finalId, player.getName(), finalSize);
@@ -215,6 +242,17 @@ public final class EaselEvent {
 				}
 			});
 		});
+	}
+
+	/**
+	 * Whether a player may put an unsaved "Artwork Copy" back on an easel.
+	 *
+	 * @param originalArtist The artist of the saved artwork the copy was made from, if it still exists.
+	 * @param player         The player placing the copy.
+	 * @param admin          True if the player has artmap.admin.
+	 */
+	public static boolean mayResumeEditCopy(Optional<UUID> originalArtist, UUID player, boolean admin) {
+		return admin || originalArtist.map(player::equals).orElse(false);
 	}
 
 	private void returnCanvasToPlayer(ItemStack removed) {
